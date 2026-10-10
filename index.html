@@ -230,10 +230,12 @@ footer{padding:14px 0 22px;text-align:center;color:var(--abu);font-size:.78rem;o
     });
   }
 
-  // Percikan bara: partikel emas naik pelan dari bawah. Mati bila pengguna memilih kurangi gerakan.
-  var kurangi = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Percikan bara: partikel naik dari bawah. Tetap ditampilkan walau pengguna memilih "kurangi gerakan" (di HP sering
+  // aktif karena mode hemat daya), tetapi dilambatkan setengahnya. Di mode panggung selalu berjalan penuh.
+  var kurangi = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches && !panggung;
+  var lembut = kurangi ? .5 : 1;
   var kanvas = $('bara');
-  if (!kanvas || kurangi) return;
+  if (!kanvas) return;
   var ctx = kanvas.getContext('2d');
   var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
   var bara = [];
@@ -282,8 +284,8 @@ footer{padding:14px 0 22px;text-align:center;color:var(--abu);font-size:.78rem;o
     isi();
     for (var i = bara.length - 1; i >= 0; i--) {
       var b = bara[i];
-      b.y -= b.vy * laju;
-      var x = b.x + Math.sin(t * b.kec + b.fase) * b.amp;
+      b.y -= b.vy * laju * lembut;
+      var x = b.x + Math.sin(t * b.kec * lembut + b.fase) * b.amp * lembut;
       var al = Math.min(1, Math.max(0, b.a * terang * (1 - (1 - b.y / h) * 1.05)));
       if (b.y < -10 || al <= 0) {
         if (bara.length > jumlah()) bara.splice(i, 1); else bara[i] = baru(false);
