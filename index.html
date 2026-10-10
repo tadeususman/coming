@@ -246,7 +246,9 @@ footer{padding:14px 0 22px;text-align:center;color:var(--abu);font-size:.78rem;o
   // Intensitas nyala k (0..1): naik (~2 dtk) setelah tombol mulai, turun cepat saat diulang.
   // Bara makin besar, makin terang, dan sedikit lebih banyak; tidak ada letupan.
   var k = 0;
-  function jumlah() { return Math.round(Math.min(110, Math.max(28, w / 14)) * (1 + .9 * k)); }
+  // Layar kecil (HP): bara lebih banyak, lebih besar, dan lebih terang supaya tetap terlihat di antara teks.
+  function kecil() { return w < 640; }
+  function jumlah() { return Math.round((kecil() ? 64 : Math.min(110, Math.max(28, w / 14))) * (1 + .9 * k)); }
   function baru(acak) {
     return {
       x: Math.random() * w, y: acak ? Math.random() * h : h + 10,
@@ -275,7 +277,7 @@ footer{padding:14px 0 22px;text-align:center;color:var(--abu);font-size:.78rem;o
     t++;
     if (pesta && k < 1) k = Math.min(1, k + 1 / 110);
     else if (!pesta && k > 0) k = Math.max(0, k - 1 / 60);
-    var besar = 1 + 2.4 * k, terang = 1 + .5 * k, laju = 1 + .5 * k;
+    var skala = kecil() ? 1.7 : 1, besar = (1 + 2.4 * k) * skala, terang = (1 + .5 * k) * (kecil() ? 1.25 : 1), laju = 1 + .5 * k;
     ctx.clearRect(0, 0, w, h);
     isi();
     for (var i = bara.length - 1; i >= 0; i--) {
